@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "spacefast/page",
+  "version": "0.0.27",
+  "title": "Spacefast page",
+  "category": "embed",
+  "icon": "embed-page",
+  "description": "Embed an authenticated page from any connected Spacefast space.",
+  "keywords": ["spacefast", "iframe", "embed"],
+  "textdomain": "spacefast-frames",
+  "attributes": {
+    "spaceId": { "type": "string", "default": "" },
+    "linkId": { "type": "string", "default": "" },
+    "spaceName": { "type": "string", "default": "" },
+    "path": { "type": "string", "default": "/" },
+    "title": { "type": "string", "default": "Spacefast page" },
+    "height": { "type": "number", "default": 640 },
+    "loading": { "type": "string", "enum": ["lazy", "eager"], "default": "lazy" },
+    "permissions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": ["fullscreen", "clipboard-write"]
+    },
+    "allowForms": { "type": "boolean", "default": true },
+    "allowDownloads": { "type": "boolean", "default": true },
+    "allowPopups": { "type": "boolean", "default": false }
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "anchor": true,
+    "html": false,
+    "spacing": { "margin": true }
+  },
+  "editorScript": "file:./editor.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "render": "file:./render.php"
+}

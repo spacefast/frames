@@ -1,0 +1,41 @@
+{
+  "name": "@spacefast/frames",
+  "version": "0.0.27",
+  "license": "MIT",
+  "description": "Securely embed authenticated Spacefast pages in third-party applications.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spacefast/frames.git",
+    "directory": "packages/frames"
+  },
+  "homepage": "https://github.com/spacefast/frames/tree/main/packages/frames#readme",
+  "bugs": {
+    "url": "https://github.com/spacefast/frames/issues"
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -b tsconfig.build.json",
+    "prepack": "bun run build",
+    "test": "bun test ./src/*.test.ts",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}

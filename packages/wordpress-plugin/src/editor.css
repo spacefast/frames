@@ -1,0 +1,68 @@
+.spacefast-frame-editor {
+  overflow: hidden;
+  border: 1px solid rgb(24 24 27 / 10%);
+  border-radius: min(1vw, 12px);
+  background: #fff;
+}
+
+.spacefast-frame-editor__bar {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgb(24 24 27 / 8%);
+  color: #3f3f46;
+  font-size: 13px;
+}
+
+.spacefast-frame-editor__bar > div {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.spacefast-frame-editor__bar span {
+  overflow: hidden;
+  color: #71717a;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spacefast-frame-editor__preview {
+  display: block;
+  width: 100%;
+  min-height: 240px;
+  border: 0;
+  background: #f4f4f5;
+}
+
+.spacefast-frame-editor__empty {
+  display: grid;
+  min-height: 240px;
+  place-items: center;
+  padding: 24px;
+  color: #71717a;
+  font-size: 14px;
+}
+
+.spacefast-frame-editor__help {
+  color: #646970;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .spacefast-frame-editor__bar,
+  .spacefast-frame-editor__bar > div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .spacefast-frame-editor__bar,
+  .spacefast-frame-editor__empty,
+  .spacefast-frame-editor__help {
+    font-size: 16px;
+  }
+}

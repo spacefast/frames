@@ -1,0 +1,23 @@
+{
+  "name": "@spacefast/wordpress-plugin",
+  "version": "0.0.27",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spacefast/frames.git",
+    "directory": "packages/wordpress-plugin"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "bun scripts/build.mjs",
+    "test": "php tests/unit.php",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@spacefast/frames": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}
