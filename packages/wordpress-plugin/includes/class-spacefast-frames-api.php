@@ -32,7 +32,7 @@ final class Spacefast_Frames_API
     public static function connected(): bool
     {
         $connection = self::connection();
-        return !empty($connection['client_id']) && !empty($connection['access_token']);
+        return empty($connection['client_secret']) && !empty($connection['client_id']) && !empty($connection['access_token']);
     }
 
     public static function save_api_base(string $value): void

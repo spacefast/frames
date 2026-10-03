@@ -109,10 +109,12 @@ same(false, array_key_exists('spacefast_oauth', $parameters), 'Callback paramete
 $challenge = $parameters['code_challenge'];
 Spacefast_Frames_API::finish_oauth('test-code', $parameters['state']);
 same(false, array_key_exists('client_secret', Spacefast_Frames_API::connection()), 'The connection stores no confidential client authority.');
+same(true, Spacefast_Frames_API::connected(), 'A person credential shows as connected.');
 $options['spacefast_frames_connection']['expires_at'] = time() - 1;
 same(array('data' => array('id' => 'frame-test-session')), Spacefast_Frames_API::request('POST', '/v1/spaces/spc_test/frame-session', array('path' => '/')), 'An expired person credential refreshes before launching a Frame.');
 
 $options['spacefast_frames_connection']['client_secret'] = 'old-confidential-connection';
+same(false, Spacefast_Frames_API::connected(), 'Legacy app credentials offer the Connect action again.');
 $refused = false;
 try {
     Spacefast_Frames_API::request('GET', '/v1/spaces');
