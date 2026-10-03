@@ -32,7 +32,7 @@ final class Spacefast_Frames_API
     public static function connected(): bool
     {
         $connection = self::connection();
-        return !empty($connection['client_id']) && !empty($connection['access_token']);
+        return empty($connection['client_secret']) && !empty($connection['client_id']) && !empty($connection['access_token']);
     }
 
     public static function save_api_base(string $value): void
@@ -64,7 +64,7 @@ final class Spacefast_Frames_API
                 'client_name' => sprintf(__('Spacefast for %s', 'spacefast-frames'), wp_parse_url(home_url('/'), PHP_URL_HOST)),
                 'client_uri' => 'https://github.com/spacefast/frames',
                 'redirect_uris' => array($redirect),
-                'token_endpoint_auth_method' => 'client_secret_post',
+                'token_endpoint_auth_method' => 'none',
                 'grant_types' => array('authorization_code', 'refresh_token'),
                 'response_types' => array('code'),
                 'type' => 'web',
@@ -73,7 +73,6 @@ final class Spacefast_Frames_API
             )
         );
         $client_id = self::required_string($registration, 'client_id');
-        $client_secret = self::required_string($registration, 'client_secret');
         $state = self::random_token(32);
         $verifier = self::random_token(48);
         $challenge = self::base64url(hash('sha256', $verifier, true));
@@ -81,13 +80,12 @@ final class Spacefast_Frames_API
             'spacefast_frames_oauth_' . hash('sha256', $state),
             array(
                 'client_id' => $client_id,
-                'client_secret' => self::seal($client_secret),
                 'verifier' => self::seal($verifier),
                 'api_base' => self::api_base(),
             ),
             10 * MINUTE_IN_SECONDS
         );
-        return add_query_arg(
+        return self::api_base() . '/v1/auth/oauth2/authorize?' . http_build_query(
             array(
                 'client_id' => $client_id,
                 'redirect_uri' => $redirect,
@@ -98,7 +96,9 @@ final class Spacefast_Frames_API
                 'code_challenge' => $challenge,
                 'code_challenge_method' => 'S256',
             ),
-            self::api_base() . '/v1/auth/oauth2/authorize'
+            '',
+            '&',
+            PHP_QUERY_RFC3986
         );
     }
 
@@ -112,7 +112,6 @@ final class Spacefast_Frames_API
         }
         $api_base = untrailingslashit((string) ($pending['api_base'] ?? ''));
         $client_id = (string) ($pending['client_id'] ?? '');
-        $client_secret = self::unseal((string) ($pending['client_secret'] ?? ''));
         $verifier = self::unseal((string) ($pending['verifier'] ?? ''));
         $tokens = self::token_request(
             $api_base,
@@ -121,7 +120,6 @@ final class Spacefast_Frames_API
                 'code' => $code,
                 'redirect_uri' => self::redirect_uri(),
                 'client_id' => $client_id,
-                'client_secret' => $client_secret,
                 'code_verifier' => $verifier,
                 'resource' => $api_base . '/v1',
             )
@@ -130,7 +128,6 @@ final class Spacefast_Frames_API
             array(
                 'api_base' => $api_base,
                 'client_id' => $client_id,
-                'client_secret' => self::seal($client_secret),
             ),
             $tokens
         );
@@ -187,6 +184,9 @@ final class Spacefast_Frames_API
     private static function fresh_connection(): array
     {
         $connection = self::connection();
+        if (!empty($connection['client_secret'])) {
+            throw new RuntimeException(__('Reconnect Spacefast to continue.', 'spacefast-frames'));
+        }
         $expires = (int) ($connection['expires_at'] ?? 0);
         if ($expires > 0 && $expires <= time() + 60 && !empty($connection['refresh_token'])) {
             return self::refresh(false);
@@ -201,8 +201,7 @@ final class Spacefast_Frames_API
             return $connection;
         }
         $refresh = self::unseal((string) ($connection['refresh_token'] ?? ''));
-        $secret = self::unseal((string) ($connection['client_secret'] ?? ''));
-        if ($refresh === '' || $secret === '') {
+        if ($refresh === '' || !empty($connection['client_secret'])) {
             throw new RuntimeException(__('Reconnect Spacefast to continue.', 'spacefast-frames'));
         }
         $tokens = self::token_request(
@@ -211,7 +210,6 @@ final class Spacefast_Frames_API
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $refresh,
                 'client_id' => (string) ($connection['client_id'] ?? ''),
-                'client_secret' => $secret,
                 'resource' => self::resource(),
             )
         );
